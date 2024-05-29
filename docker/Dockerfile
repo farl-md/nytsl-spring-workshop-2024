@@ -1,7 +1,7 @@
 # ----------------------------------------------------
 # Base-image
 # ----------------------------------------------------
-FROM python:3.9-slim-buster as common-base
+FROM python:3.9-bullseye as common-base
 # Django directions: https://blog.ploetzli.ch/2020/efficient-multi-stage-build-django-docker/
 # Pip on docker : https://pythonspeed.com/articles/multi-stage-docker-python/
 # https://blog.mikesir87.io/2018/07/leveraging-multi-stage-builds-single-dockerfile-dev-prod/
@@ -36,6 +36,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
 RUN pip install -I uwsgi 
+
+# RUN apt-get install -y libqp-dev
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/

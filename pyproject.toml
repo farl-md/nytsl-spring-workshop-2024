@@ -38,7 +38,7 @@ Django = [
     {version = "~3.2", python = "~3.7"},
     {version = ">=3.2", python = ">=3.8"}
 ]
-psycopg2 = { version = "^2.7", optional = true }
+psycopg2 = { version = "^2.9.1", optional = true }
 sentry-sdk = {version = "^1.5.12", optional = true}
 django-environ = {version = "^0.8.1", optional = true}
 

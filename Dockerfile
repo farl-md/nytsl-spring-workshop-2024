@@ -3,11 +3,14 @@
 # ----------------------------------------------------
 # Base-image
 # ----------------------------------------------------
-FROM python:3.9-slim-buster as common-base
+FROM python:3.9-bullseye as common-base
 # Django directions: https://blog.ploetzli.ch/2020/efficient-multi-stage-build-django-docker/
 # Pip on docker : https://pythonspeed.com/articles/multi-stage-docker-python/
 # https://blog.mikesir87.io/2018/07/leveraging-multi-stage-builds-single-dockerfile-dev-prod/
 # https://pythonspeed.com/articles/base-image-python-docker-images/
+
+# RUN apt-get update
+# RUN apt-get install -y libpq-dev curl
 
 # Default environment: Dev
 ARG ENV=dev
@@ -27,6 +30,8 @@ WORKDIR /app
 COPY ./docker/install-packages.sh .
 RUN ./install-packages.sh
 
+EXPOSE 80
+
 # ----------------------------------------------------
 # Install dependencies
 # ----------------------------------------------------
@@ -41,7 +46,7 @@ COPY ./arklet ./arklet
 COPY ./manage.py ./manage.py
 COPY ./docker/entrypoint.sh ./entrypoint.sh
 
-RUN pip install -r requirements.txt
+RUN pip install --prefer-binary -r requirements.txt
 
 # ----------------------------------------------------
 # Run Dev

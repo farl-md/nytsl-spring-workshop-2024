@@ -32,7 +32,7 @@ apt-get -y install --no-install-recommends \
     libsass1 \
     gettext \
     build-essential \
-    gcc
+    gcc \
 
 # Delete cached files we don't need anymore:
 apt-get clean
