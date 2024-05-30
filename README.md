@@ -164,7 +164,3 @@ This repository is pre-configured for production deployment using nginx and guin
 To use this repository, fill in the relevant database credentials and a secure Django secret key in env.prod.example and rename the file to env.prod. 
 
 To launch the minter, resolver, and nginx server run `docker-compose -f docker-compose.nginx.yml --profile nginx up`, or simply `make prod`. By default, the resolver runs on port 80 and the minter runs on port 8080. To change the port that the minter is accessed on, alter the port numbers in both docker-compose.nginx.yml as well as nginx.conf. 
-
-## License
-
-This code is licensed with the MIT open-source license.
