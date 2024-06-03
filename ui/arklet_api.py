@@ -4,8 +4,7 @@ import argparse
 import json
 import os
 
-#DEFAULT_URL = 'http://127.0.0.1:8001'
-DEFAULT_URL = 'http://ark.frick.org:8080'
+DEFAULT_URL = 'http://127.0.0.1:8001'
 DEFAULT_KEY = os.environ['ARK_API_KEY']
 
 MINT_FIELDS = [
@@ -67,8 +66,10 @@ def mint(data: dict):
     return authorized(POST, 'mint', data)
 
 def csv2json(csvfile):
-    reader = csv.DictReader(open(csvfile, 'rt'))
-    return [r for r in reader]
+    with open(csvfile, mode='r', newline = '') as fp:
+        reader = csv.DictReader(fp)
+        data = [r for r in reader]
+        return data
 
 def query_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
@@ -90,12 +91,30 @@ def update_csv(data: dict):
 def mint_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
     assert data['naan'], "Must include --naan argument for bulk operations"
-    assert len(data.keys()) == 2, "Only --csv argument is required for bulk update"
+    # assert len(data.keys()) == 2, "Only --csv argument is required for bulk update"
     mint_data = csv2json(data['csv'])
-    return authorized(POST, 'bulk_mint', {
+    result = authorized(POST, 'bulk_mint', {
         'data': mint_data,
         'naan': data['naan']
     })
+    delivery(result)
+
+def delivery(data):
+    name = str(input("What do you want to call this file? Include the file extension. \n"))
+    deliver = [ark for ark in data['arks_created']]
+    pay = []
+    for ark in deliver:
+        r = {'naan' : ark['ark'].split('/')[0], 
+        'shoulder' : ark['ark'].split('/')[1][:4]}
+        ark['ark'] = ark['ark'].split('/')[1]
+        row = r | ark
+        pay.append(row)
+    with open(os.path.join(os.getcwd(), "data", name), 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=list(pay[0].keys()))
+        writer.writeheader()
+        writer.writerows(pay)
+    return data
+
 
 ENDPOINTS = [
     query,
