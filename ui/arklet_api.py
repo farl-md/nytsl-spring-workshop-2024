@@ -73,20 +73,24 @@ def csv2json(csvfile):
 
 def query_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
-    assert len(data.keys()) == 1, "Only --csv argument is required for bulk query"
+    # assert len(data.keys()) == 1, "Only --csv argument is required for bulk query"
     jsondata = csv2json(data['csv'])
     assert 'ark' in jsondata[0], "CSV for bulk ark querying must include 'ark' column"
     return query_generic(POST, 'bulk_query', json=jsondata)
 
 def update_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
-    assert len(data.keys()) == 1, "Only --csv argument is required for bulk update"
+    # assert len(data.keys()) == 1, "Only --csv argument is required for bulk update"
     update_data = csv2json(data['csv'])
     for record in update_data:
         assert 'ark' in record, "CSV for bulk ark querying must include 'ark' column"
-    return authorized(POST, 'bulk_update', {
+    result = authorized(POST, 'bulk_update', {
         'data': update_data,
     })
+    print(result)
+    delivery({'arks_sent' : result['num_received'], 
+        'arks_updated' : result['num_updated'],
+        'arks_created' : query_csv(data)})
 
 def mint_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
@@ -97,22 +101,21 @@ def mint_csv(data: dict):
         'data': mint_data,
         'naan': data['naan']
     })
+    # clean up ark field for easy updating
+    for row in result['arks_created']:
+        row['ark'] = 'ark:/' + row['ark']
     delivery(result)
 
 def delivery(data):
-    name = str(input("What do you want to call this file? Include the file extension. \n"))
     deliver = [ark for ark in data['arks_created']]
-    pay = []
-    for ark in deliver:
-        r = {'naan' : ark['ark'].split('/')[0], 
-        'shoulder' : ark['ark'].split('/')[1][:4]}
-        ark['ark'] = ark['ark'].split('/')[1]
-        row = r | ark
-        pay.append(row)
+    write_to_csv(deliver)
+
+def write_to_csv(data):
+    name = str(input("What do you want to call this file? Include the file extension. \n"))
     with open(os.path.join(os.getcwd(), "data", name), 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=list(pay[0].keys()))
+        writer = csv.DictWriter(csvfile, fieldnames=list(data[0].keys()))
         writer.writeheader()
-        writer.writerows(pay)
+        writer.writerows(data)
     return data
 
 
