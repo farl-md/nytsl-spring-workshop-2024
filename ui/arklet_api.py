@@ -84,19 +84,16 @@ def update_csv(data: dict):
     update_data = csv2json(data['csv'])
     for record in update_data:
         assert 'ark' in record, "CSV for bulk ark querying must include 'ark' column"
-    result = authorized(POST, 'bulk_update', {
+    return authorized(POST, 'bulk_update', {
         'data': update_data,
     })
-    print(result)
-    delivery({'arks_sent' : result['num_received'], 
-        'arks_updated' : result['num_updated'],
-        'arks_created' : query_csv(data)})
 
 def mint_csv(data: dict):
     assert data['csv'], "Must include --csv argument for bulk operations"
     assert data['naan'], "Must include --naan argument for bulk operations"
     # assert len(data.keys()) == 2, "Only --csv argument is required for bulk update"
     mint_data = csv2json(data['csv'])
+    print(f"{len(mint_data)} assets received.")
     result = authorized(POST, 'bulk_mint', {
         'data': mint_data,
         'naan': data['naan']
