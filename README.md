@@ -2,7 +2,7 @@
 
 This workshop uses the development version of arklet-frick ([https://github.com/frickdahl/arklet-frick][1]).
 
-To install this repository, download the code and open to the repository on your computer's command line. Make sure you have Python 3.9 or greater and Docker installed on your computer. 
+To install this repository, download the code ZIP or clone the repository. `cd` to the repository using your computer's command line. Make sure you have Python 3.9 or greater and Docker installed on your computer. 
 
 Use `docker-compose up` to automatically launch the Postgres database, the arklet-minter component, and the arklet-resolver component. By default, the minter runs on 127.0.0.1:8001 and the resolver runs on 127.0.0.1:8000.
 
